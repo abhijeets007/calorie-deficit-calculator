@@ -5,18 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Metabolic Engine — Calorie Deficit & Weight Loss Calculator</title>
 
-  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-  <!-- External stylesheet -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- UI Polish: Smooth Transitions & Object Resizing -->
   <style>
     /* Ultra-smooth tab panel fade-in */
     .tab-panel.active {
@@ -39,14 +35,8 @@
 
 <body data-tab="inputs">
 
-  <!-- ── Corner decorative accent ── -->
   <div class="corner-accent"></div>
 
-  <!-- ══════════════════════════════════════════════════════════════════════
-       DECORATIVE 3D OBJECTS — Cleaned structural wrappers, boosted size
-       ══════════════════════════════════════════════════════════════════════ -->
-
-  <!-- ── 1. HEAVY PUNCHING BAG SCENE (Inputs tab) ── -->
   <div class="bag-scene tab-active">
     <div class="bag-container" style="top: 0;">
       <div class="tilt-wrapper">
@@ -56,7 +46,6 @@
   </div>
 
 
-  <!-- ── 2. BOXING GLOVES SCENE (Results tab) ── -->
   <div class="gloves-scene">
     <div class="gloves-container" style="top: 0;">
       <div class="tilt-wrapper">
@@ -66,7 +55,6 @@
   </div>
 
 
-  <!-- ── 3. CHAMPIONSHIP TROPHY SCENE (Timeline tab) ── -->
   <div class="speedbag-scene">
     <div class="speedbag-container" style="top: 15px;">
       <div class="tilt-wrapper">
@@ -76,9 +64,6 @@
   </div>
 
 
-  <!-- ══════════════════════════════════════════════════════════════════════
-       HEADER
-       ══════════════════════════════════════════════════════════════════════ -->
   <header class="header">
     <div class="header-eyebrow">Metabolic Engine</div>
     <h2><em>Calorie Deficit</em><br>&amp; Weight Loss Calculator</h2>
@@ -86,9 +71,6 @@
   </header>
 
 
-  <!-- ══════════════════════════════════════════════════════════════════════
-       TAB BAR
-       ══════════════════════════════════════════════════════════════════════ -->
   <nav class="tabs" role="tablist">
     <button class="tab active" data-tab="inputs"   role="tab" aria-selected="true">Inputs</button>
     <button class="tab"        data-tab="results"  role="tab" aria-selected="false">Results</button>
@@ -96,18 +78,13 @@
   </nav>
 
 
-  <!-- ══════════════════════════════════════════════════════════════════════
-       TAB PANEL — INPUTS
-       ══════════════════════════════════════════════════════════════════════ -->
   <div class="tab-panel active" id="tab-inputs" role="tabpanel">
     <div class="main">
 
-      <!-- ── LEFT PANEL: Body Metrics ── -->
       <div class="panel-left">
 
         <p class="section-label">Body Metrics</p>
 
-        <!-- Gender Toggle -->
         <div class="form-group">
           <div class="form-label">Gender</div>
           <div class="gender-toggle">
@@ -116,16 +93,14 @@
           </div>
         </div>
 
-        <!-- Age -->
         <div class="form-group">
           <label class="form-label" for="input-age">Age</label>
           <div class="input-wrap">
-            <input type="number" id="input-age" placeholder="25" min="10" max="100" />
+            <input type="number" id="input-age" value="21" placeholder="25" min="10" max="100" />
             <span class="input-suffix">yrs</span>
           </div>
         </div>
 
-        <!-- Height with cm / ft toggle -->
         <div class="form-group">
           <div class="form-label">
             <span>Height</span>
@@ -136,23 +111,22 @@
           </div>
           <div class="input-row two" id="height-input-row">
             <div class="input-wrap">
-              <input type="number" id="input-height-cm" placeholder="175" min="100" max="250" />
+              <input type="number" id="input-height-cm" value="175" placeholder="175" min="100" max="250" />
               <span class="input-suffix">cm</span>
             </div>
           </div>
           <div class="input-row two" id="height-input-row-ft" style="display:none;">
             <div class="input-wrap">
-              <input type="number" id="input-height-ft" placeholder="5" min="3" max="8" />
+              <input type="number" id="input-height-ft" value="5" placeholder="5" min="3" max="8" />
               <span class="input-suffix">ft</span>
             </div>
             <div class="input-wrap">
-              <input type="number" id="input-height-in" placeholder="9" min="0" max="11" />
+              <input type="number" id="input-height-in" value="9" placeholder="9" min="0" max="11" />
               <span class="input-suffix">in</span>
             </div>
           </div>
         </div>
 
-        <!-- Weight with kg / lbs toggle + BMI tile -->
         <div class="form-group">
           <div class="form-label">
             <span>Current Weight</span>
@@ -163,10 +137,9 @@
           </div>
           <div class="input-row two">
             <div class="input-wrap">
-              <input type="number" id="input-weight" placeholder="75" min="30" max="400" />
+              <input type="number" id="input-weight" value="75" placeholder="75" min="30" max="400" />
               <span class="input-suffix" id="weight-suffix">kg</span>
             </div>
-            <!-- BMI Tile -->
             <div class="bmi-tile">
               <div class="metric-label" style="margin-bottom:4px;">BMI</div>
               <div class="metric-value red" id="bmi-value" style="font-size:20px;">—</div>
@@ -175,20 +148,18 @@
           </div>
         </div>
 
-        <!-- Goal Weight -->
         <div class="form-group">
           <div class="form-label">
             <span>Goal Weight</span>
           </div>
           <div class="input-wrap">
-            <input type="number" id="input-goal-weight" placeholder="68" min="30" max="400" />
+            <input type="number" id="input-goal-weight" value="70" placeholder="68" min="30" max="400" />
             <span class="input-suffix" id="goal-weight-suffix">kg</span>
           </div>
         </div>
 
         <p class="section-label" style="margin-top:24px;">Activity Level</p>
 
-        <!-- Workout Days Slider -->
         <div class="slider-group">
           <div class="slider-header">
             <div class="form-label" style="margin-bottom:0;">Workout Days / Week</div>
@@ -208,7 +179,6 @@
           />
         </div>
 
-        <!-- Intensity Buttons -->
         <div class="form-group">
           <div class="form-label">Workout Intensity</div>
           <div class="intensity-grid">
@@ -230,13 +200,8 @@
           </div>
         </div>
 
-      </div><!-- /panel-left -->
+      </div><div class="panel-right">
 
-
-      <!-- ── RIGHT PANEL: Calorie Targets ── -->
-      <div class="panel-right">
-
-        <!-- TDEE Display -->
         <p class="section-label">Estimated TDEE</p>
         <div class="tdee-block">
           <div class="tdee-label">Total Daily Energy Expenditure</div>
@@ -255,12 +220,10 @@
           </div>
         </div>
 
-        <!-- Warning Box (hidden by default) -->
         <div class="warning-box" id="warning-box" style="display:none;">
           ⚠ Target calorie intake is below 1,200 kcal (women) or 1,500 kcal (men). Consider a moderate deficit or consult a dietitian.
         </div>
 
-        <!-- Rest Day Target -->
         <p class="section-label">Calorie Targets</p>
         <div class="calorie-target" id="card-rest">
           <div class="calorie-target-header">Rest Day</div>
@@ -270,7 +233,6 @@
           </div>
         </div>
 
-        <!-- Workout Day Target -->
         <div class="calorie-target" id="card-workout">
           <div class="calorie-target-header">Workout Day</div>
           <div class="calorie-input-row">
@@ -279,10 +241,8 @@
           </div>
         </div>
 
-        <!-- Macro Split -->
         <p class="section-label" style="margin-top:24px;">Macro Split</p>
         <div class="macro-bars">
-          <!-- Protein -->
           <div class="macro-row">
             <div class="macro-name" style="color:var(--red);">Protein</div>
             <div class="macro-bar-bg">
@@ -290,7 +250,6 @@
             </div>
             <div class="macro-val" id="macro-val-protein">—</div>
           </div>
-          <!-- Carbs -->
           <div class="macro-row">
             <div class="macro-name" style="color:var(--blue);">Carbohydrates</div>
             <div class="macro-bar-bg">
@@ -298,7 +257,6 @@
             </div>
             <div class="macro-val" id="macro-val-carbs">—</div>
           </div>
-          <!-- Fats -->
           <div class="macro-row">
             <div class="macro-name" style="color:var(--green);">Fats</div>
             <div class="macro-bar-bg">
@@ -308,26 +266,15 @@
           </div>
         </div>
 
-        <!-- Calculate CTA -->
         <button class="gender-btn active" id="btn-calculate" style="width:100%;padding:15px;font-size:13px;letter-spacing:0.14em;border-radius:var(--radius);">
           ⚡ Calculate
         </button>
 
-      </div><!-- /panel-right -->
-
-    </div><!-- /main -->
-  </div><!-- /tab-inputs -->
-
-
-  <!-- ══════════════════════════════════════════════════════════════════════
-       TAB PANEL — RESULTS
-       ══════════════════════════════════════════════════════════════════════ -->
-  <div class="tab-panel" id="tab-results" role="tabpanel">
+      </div></div></div><div class="tab-panel" id="tab-results" role="tabpanel">
     <div style="padding:26px 24px;">
 
       <p class="section-label">Key Metrics</p>
 
-      <!-- 4 Metric Cards -->
       <div class="results-grid">
         <div class="metric-card accent">
           <div class="metric-label">Daily Deficit</div>
@@ -351,7 +298,6 @@
         </div>
       </div>
 
-      <!-- Insight Strip -->
       <div class="insight-strip" id="insight-strip">
         <div class="insight-icon">💡</div>
         <div class="insight-text" id="insight-text">
@@ -359,31 +305,22 @@
         </div>
       </div>
 
-      <!-- Chart: Weekly Calorie Cycle -->
       <div class="chart-title">Weekly Calorie Cycle</div>
       <div class="chart-wrap">
         <canvas id="chart-calories"></canvas>
       </div>
 
-      <!-- Chart: Deficit vs Surplus -->
       <div class="chart-title" style="margin-top:16px;">Daily Deficit Balance</div>
       <div class="chart-wrap2">
         <canvas id="chart-deficit"></canvas>
       </div>
 
     </div>
-  </div><!-- /tab-results -->
-
-
-  <!-- ══════════════════════════════════════════════════════════════════════
-       TAB PANEL — TIMELINE
-       ══════════════════════════════════════════════════════════════════════ -->
-  <div class="tab-panel" id="tab-timeline" role="tabpanel">
+  </div><div class="tab-panel" id="tab-timeline" role="tabpanel">
     <div style="padding:26px 24px;">
 
       <p class="section-label">Weight Loss Projection</p>
 
-      <!-- Chart: Weight-loss trajectory -->
       <div class="chart-title">Body Weight Trajectory</div>
       <div class="chart-wrap" style="height:240px;margin-bottom:24px;">
         <canvas id="chart-timeline"></canvas>
@@ -391,9 +328,7 @@
 
       <p class="section-label">Week-by-Week Breakdown</p>
 
-      <!-- Timeline Rows List -->
       <div class="timeline-items" id="timeline-list">
-        <!-- Populated by script.js -->
         <div class="timeline-row">
           <div class="timeline-week">Week —</div>
           <div class="timeline-bar-wrap"><div class="timeline-bar" style="width:0%;"></div></div>
@@ -403,16 +338,9 @@
       </div>
 
     </div>
-  </div><!-- /tab-timeline -->
+  </div><div class="signature">Abhijeet Singh</div>
 
 
-  <!-- ══════════════════════════════════════════════════════════════════════
-       SIGNATURE STAMP
-       ══════════════════════════════════════════════════════════════════════ -->
-  <div class="signature">Abhijeet Singh</div>
-
-
-  <!-- External script -->
   <script src="script.js"></script>
 </body>
 </html>
