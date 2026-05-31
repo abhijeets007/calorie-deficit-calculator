@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;--bg2:#111111;--bg3:#181818;--bg4:#1e1e1e;
+  --border:#2a2a2a;--border2:#333;
+  --amber:#f59e0b;--amber2:#fbbf24;--amber-dim:#78490a;
+  --text:#f0f0f0;--text2:#aaa;--text3:#666;
+  --green:#22c55e;--red:#ef4444;--blue:#60a5fa;
+  --radius:10px;--radius-sm:6px;
+}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;padding:0 0 60px}
+.mono{font-family:'DM Mono',monospace}
+
+.header{padding:32px 24px 0;text-align:center;border-bottom:1px solid var(--border);padding-bottom:24px}
+.header h1{font-size:11px;font-weight:600;letter-spacing:0.25em;text-transform:uppercase;color:var(--amber);margin-bottom:8px}
+.header h2{font-size:26px;font-weight:800;color:var(--text);line-height:1.1}
+.header h2 span{color:var(--amber)}
+
+.tabs{display:flex;border-bottom:1px solid var(--border);padding:0 24px;gap:0}
+.tab{padding:14px 20px;font-size:12px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;color:var(--text3);border-bottom:2px solid transparent;transition:all 0.2s;background:none;border-left:none;border-right:none;border-top:none}
+.tab:hover{color:var(--text2)}
+.tab.active{color:var(--amber);border-bottom-color:var(--amber)}
+
+.main{display:grid;grid-template-columns:380px 1fr;gap:0;min-height:600px}
+.panel-left{border-right:1px solid var(--border);padding:24px}
+.panel-right{padding:24px}
+
+.section-label{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--amber);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--border)}
+
+.form-group{margin-bottom:18px}
+.form-label{font-size:11px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--text2);margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
+.unit-pill{display:flex;background:var(--bg3);border-radius:20px;overflow:hidden;border:1px solid var(--border);padding:2px}
+.unit-pill button{padding:3px 10px;font-size:10px;font-weight:600;letter-spacing:0.05em;border:none;background:none;color:var(--text3);cursor:pointer;border-radius:16px;transition:all 0.2s;font-family:'Syne',sans-serif}
+.unit-pill button.active{background:var(--amber);color:#000}
+
+.gender-toggle{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:6px}
+.gender-btn{padding:10px;font-size:12px;font-weight:600;letter-spacing:0.05em;border:1.5px solid var(--border2);background:var(--bg3);color:var(--text2);cursor:pointer;border-radius:var(--radius-sm);transition:all 0.2s;font-family:'Syne',sans-serif;text-align:center}
+.gender-btn:hover{border-color:var(--amber-dim);color:var(--text)}
+.gender-btn.active{border-color:var(--amber);background:var(--amber-dim);color:var(--amber)}
+
+.input-row{display:grid;gap:8px}
+.input-row.two{grid-template-columns:1fr 1fr}
+.input-wrap{position:relative}
+.input-suffix{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;pointer-events:none}
+input[type=number]{width:100%;background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:10px 40px 10px 12px;color:var(--text);font-size:15px;font-family:'DM Mono',monospace;font-weight:500;outline:none;transition:border-color 0.2s;-moz-appearance:textfield}
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none}
+input[type=number]:focus{border-color:var(--amber)}
+input[type=number]::placeholder{color:var(--text3)}
+
+.slider-group{margin-bottom:18px}
+.slider-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.slider-val{font-size:20px;font-weight:700;color:var(--amber);font-family:'DM Mono',monospace}
+.slider-val-unit{font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-left:2px}
+input[type=range]{-webkit-appearance:none;width:100%;height:3px;border-radius:2px;outline:none;cursor:pointer;accent-color:var(--amber)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--amber);border:2px solid var(--bg);box-shadow:0 0 0 2px var(--amber-dim);cursor:pointer}
+
+.intensity-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.intensity-btn{padding:8px 4px;font-size:9px;font-weight:700;letter-spacing:0.05em;text-align:center;border:1.5px solid var(--border2);background:var(--bg3);color:var(--text3);cursor:pointer;border-radius:var(--radius-sm);transition:all 0.2s;font-family:'Syne',sans-serif;line-height:1.3}
+.intensity-btn:hover{border-color:var(--amber-dim);color:var(--text2)}
+.intensity-btn.active{border-color:var(--amber);background:var(--amber-dim);color:var(--amber)}
+
+.calorie-target{background:var(--bg3);border:1.5px solid var(--border2);border-radius:var(--radius-sm);padding:12px;margin-bottom:8px}
+.calorie-target-header{font-size:10px;font-weight:600;letter-spacing:0.15em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.calorie-input-row{display:flex;align-items:center;gap:8px}
+.calorie-input-row input{flex:1;padding:8px 12px;background:var(--bg4);border:1.5px solid var(--border2);border-radius:var(--radius-sm);color:var(--text);font-size:15px;font-family:'DM Mono',monospace;outline:none;transition:border-color 0.2s;width:auto}
+.calorie-input-row input:focus{border-color:var(--amber)}
+.calorie-badge{font-size:10px;font-family:'DM Mono',monospace;color:var(--text3);white-space:nowrap}
+
+.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px}
+.metric-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px}
+.metric-card.accent{border-color:var(--amber-dim);background:#1a1200}
+.metric-card.green-card{border-color:#14532d;background:#0a1a0e}
+.metric-card.red-card{border-color:#450a0a;background:#150404}
+.metric-label{font-size:9px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--text3);margin-bottom:6px}
+.metric-value{font-size:24px;font-weight:800;font-family:'DM Mono',monospace;line-height:1;margin-bottom:3px}
+.metric-value.amber{color:var(--amber)}
+.metric-value.green{color:var(--green)}
+.metric-value.red{color:var(--red)}
+.metric-value.blue{color:var(--blue)}
+.metric-sub{font-size:10px;color:var(--text3);font-family:'DM Mono',monospace}
+
+.insight-strip{background:linear-gradient(135deg,#1a1200,#111);border:1px solid var(--amber-dim);border-radius:var(--radius);padding:14px 16px;margin-bottom:20px;display:flex;gap:12px;align-items:flex-start}
+.insight-icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.insight-text{font-size:12px;color:var(--text2);line-height:1.6}
+.insight-text strong{color:var(--amber)}
+
+.chart-title{font-size:10px;font-weight:700;letter-spacing:0.15em;text-transform:uppercase;color:var(--text3);margin-bottom:12px}
+.chart-wrap{position:relative;height:200px;width:100%;margin-bottom:8px}
+.chart-wrap2{position:relative;height:180px;width:100%;margin-bottom:8px}
+
+.macro-bars{margin-bottom:24px}
+.macro-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.macro-name{font-size:11px;font-weight:600;color:var(--text2);width:90px;flex-shrink:0}
+.macro-bar-bg{flex:1;height:6px;background:var(--bg4);border-radius:3px;overflow:hidden}
+.macro-bar-fill{height:100%;border-radius:3px;transition:width 0.4s ease}
+.macro-val{font-size:11px;font-family:'DM Mono',monospace;color:var(--text2);width:55px;text-align:right;flex-shrink:0}
+
+.warning-box{background:#1a0a0a;border:1px solid #450a0a;border-radius:var(--radius);padding:12px 14px;margin-bottom:16px;font-size:11px;color:#fca5a5;line-height:1.6}
+
+.tab-panel{display:none}
+.tab-panel.active{display:block}
+
+.timeline-items{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto}
+.timeline-row{display:flex;align-items:center;gap:12px;padding:8px 10px;background:var(--bg3);border-radius:var(--radius-sm);border:1px solid var(--border)}
+.timeline-week{font-size:10px;font-weight:700;letter-spacing:0.1em;color:var(--text3);width:50px;flex-shrink:0}
+.timeline-bar-wrap{flex:1;height:8px;background:var(--bg4);border-radius:4px;overflow:hidden}
+.timeline-bar{height:100%;background:var(--amber);border-radius:4px;transition:width 0.5s}
+.timeline-weight{font-size:12px;font-family:'DM Mono',monospace;color:var(--text);width:70px;text-align:right;flex-shrink:0}
+.timeline-delta{font-size:10px;font-family:'DM Mono',monospace;color:var(--green);width:50px;text-align:right;flex-shrink:0}
+
+@media(max-width:720px){
+.main{grid-template-columns:1fr}
+.panel-left{border-right:none;border-bottom:1px solid var(--border)}
+}
+</style>
+</head>
+<body>
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Calorie deficit and weight loss calculator with BMR, TDEE, and projection charts</h2>
+
+<div class="header">
+  <div class="mono" style="font-size:10px;letter-spacing:0.25em;text-transform:uppercase;color:var(--amber);margin-bottom:8px">▸ METABOLIC CALCULATOR</div>
+  <h2 style="font-size:26px;font-weight:800;color:var(--text);line-height:1.1;font-family:'Syne',sans-serif">Calorie Deficit & <span style="color:var(--amber)">Weight Loss</span> Engine</h2>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('inputs',this)">Inputs</button>
+  <button class="tab" onclick="switchTab('results',this)">Results & Charts</button>
+  <button class="tab" onclick="switchTab('timeline',this)">Projection Timeline</button>
+</div>
+
+<div class="tab-panel active" id="tab-inputs">
+<div class="main">
+<div class="panel-left">
+
+  <div class="section-label">Body Metrics</div>
+  <div class="form-group">
+    <div class="form-label">Gender</div>
+    <div class="gender-toggle">
+      <button class="gender-btn active" id="btn-male" onclick="setGender('male')">♂ Male</button>
+      <button class="gender-btn" id="btn-female" onclick="setGender('female')">♀ Female</button>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="form-label">Age</div>
+    <div class="input-wrap">
+      <input type="number" id="age" value="28" min="15" max="80" placeholder="Age" oninput="recalc()">
+      <span class="input-suffix">yrs</span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="form-label">
+      <span>Height</span>
+      <div class="unit-pill">
+        <button class="active" id="h-cm" onclick="setHeightUnit('cm')">cm</button>
+        <button id="h-ft" onclick="setHeightUnit('ft')">ft</button>
+      </div>
+    </div>
+    <div class="input-row two" id="height-inputs">
+      <div class="input-wrap" id="h-cm-wrap">
+        <input type="number" id="height-cm" value="175" min="100" max="250" placeholder="175" oninput="recalc()">
+        <span class="input-suffix">cm</span>
+      </div>
+    </div>
+    <div id="h-ft-wrap" style="display:none">
+      <div class="input-row two">
+        <div class="input-wrap"><input type="number" id="height-ft" value="5" min="4" max="7" placeholder="5" oninput="syncHeight()"><span class="input-suffix">ft</span></div>
+        <div class="input-wrap"><input type="number" id="height-in" value="9" min="0" max="11" placeholder="9" oninput="syncHeight()"><span class="input-suffix">in</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="form-label">
+      <span>Weight</span>
+      <div class="unit-pill">
+        <button class="active" id="w-kg" onclick="setWeightUnit('kg')">kg</button>
+        <button id="w-lbs" onclick="setWeightUnit('lbs')">lbs</button>
+      </div>
+    </div>
+    <div class="input-row two">
+      <div class="input-wrap">
+        <input type="number" id="weight" value="80" min="30" max="300" step="0.1" placeholder="80" oninput="recalc()">
+        <span class="input-suffix" id="weight-unit-label">kg</span>
+      </div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-size:9px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;font-weight:600;margin-bottom:3px">BMI</div>
+        <div style="font-size:18px;font-weight:700;color:var(--amber);font-family:'DM Mono',monospace" id="bmi-val">25.1</div>
+        <div style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace" id="bmi-cat">Normal</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="form-label">
+      <span>Goal Weight <span style="font-size:10px;text-transform:none;letter-spacing:0;color:var(--text3)">(optional)</span></span>
+    </div>
+    <div class="input-wrap">
+      <input type="number" id="goal-weight" value="72" min="30" max="300" step="0.1" placeholder="Goal weight" oninput="recalc()">
+      <span class="input-suffix" id="goal-unit-label">kg</span>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-top:4px">Activity Level</div>
+
+  <div class="slider-group">
+    <div class="slider-header">
+      <div class="form-label" style="margin-bottom:0">Workout Days / Week</div>
+      <div><span class="slider-val" id="days-val">4</span><span class="slider-val-unit">days</span></div>
+    </div>
+    <input type="range" min="0" max="7" step="1" value="4" id="workout-days" oninput="document.getElementById('days-val').textContent=this.value;recalc()">
+    <div style="display:flex;justify-content:space-between;font-size:9px;color:var(--text3);margin-top:4px">
+      <span>REST</span><span>7</span>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <div class="form-label">Workout Intensity</div>
+    <div class="intensity-grid">
+      <button class="intensity-btn" onclick="setIntensity(0,this)" data-mult="1.0">Sedentary<br><span style="color:var(--text3)">desk</span></button>
+      <button class="intensity-btn active" onclick="setIntensity(1,this)" data-mult="1.2">Light<br><span style="color:var(--text3)">walk</span></button>
+      <button class="intensity-btn" onclick="setIntensity(2,this)" data-mult="1.375">Moderate<br><span style="color:var(--text3)">gym</span></button>
+      <button class="intensity-btn" onclick="setIntensity(3,this)" data-mult="1.55">Hard<br><span style="color:var(--text3)">heavy</span></button>
+      <button class="intensity-btn" onclick="setIntensity(4,this)" data-mult="1.725">Athlete<br><span style="color:var(--text3)">elite</span></button>
+    </div>
+  </div>
+
+</div>
+<div class="panel-right">
+
+  <div class="section-label">Calorie Targets</div>
+
+  <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:16px">
+    <div style="font-size:10px;color:var(--text3);letter-spacing:0.1em;text-transform:uppercase;font-weight:600;margin-bottom:10px">Estimated maintenance (TDEE)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div>
+        <div style="font-size:9px;color:var(--text3);margin-bottom:4px">REST DAYS</div>
+        <div style="font-size:22px;font-weight:700;color:var(--blue);font-family:'DM Mono',monospace" id="tdee-rest">1,920</div>
+        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace">kcal / day</div>
+      </div>
+      <div>
+        <div style="font-size:9px;color:var(--text3);margin-bottom:4px">WORKOUT DAYS</div>
+        <div style="font-size:22px;font-weight:700;color:var(--amber);font-family:'DM Mono',monospace" id="tdee-workout">2,380</div>
+        <div style="font-size:10px;color:var(--text3);font-family:'DM Mono',monospace">kcal / day</div>
+      </div>
+    </div>
+    <div style="border-top:1px solid var(--border);margin-top:10px;padding-top:8px;font-size:10px;color:var(--text3)">
+      BMR: <span class="mono" id="bmr-display" style="color:var(--text2)">1,745 kcal</span> &nbsp;·&nbsp; Weekly avg: <span class="mono" id="weekly-avg" style="color:var(--text2)">2,100 kcal</span>
+    </div>
+  </div>
+
+  <div class="calorie-target">
+    <div class="calorie-target-header">Rest Day Calorie Target</div>
+    <div class="calorie-input-row">
+      <input type="number" id="rest-cals" value="1500" min="800" max="5000" step="50" oninput="recalc()">
+      <span class="calorie-badge" id="rest-deficit-badge">−420 kcal deficit</span>
+    </div>
+  </div>
+
+  <div class="calorie-target" style="margin-bottom:16px">
+    <div class="calorie-target-header">Workout Day Calorie Target</div>
+    <div class="calorie-input-row">
+      <input type="number" id="workout-cals" value="1800" min="800" max="5000" step="50" oninput="recalc()">
+      <span class="calorie-badge" id="workout-deficit-badge">−580 kcal deficit</span>
+    </div>
+  </div>
+
+  <div class="section-label">Macro Split</div>
+  <div class="macro-bars" id="macro-bars">
+    <div class="macro-row">
+      <span class="macro-name">Protein</span>
+      <div class="macro-bar-bg"><div class="macro-bar-fill" id="bar-p" style="width:35%;background:#60a5fa"></div></div>
+      <span class="macro-val mono" id="val-p">–</span>
+    </div>
+    <div class="macro-row">
+      <span class="macro-name">Carbs</span>
+      <div class="macro-bar-bg"><div class="macro-bar-fill" id="bar-c" style="width:45%;background:#f59e0b"></div></div>
+      <span class="macro-val mono" id="val-c">–</span>
+    </div>
+    <div class="macro-row">
+      <span class="macro-name">Fat</span>
+      <div class="macro-bar-bg"><div class="macro-bar-fill" id="bar-f" style="width:20%;background:#a78bfa"></div></div>
+      <span class="macro-val mono" id="val-f">–</span>
+    </div>
+    <div style="font-size:10px;color:var(--text3);margin-top:6px">Based on rest-day target &nbsp;·&nbsp; Protein: 2g/kg body weight</div>
+  </div>
+
+  <div id="warning-section"></div>
+
+</div>
+</div>
+</div>
+
+<div class="tab-panel" id="tab-results">
+<div style="padding:24px">
+  <div class="results-grid">
+    <div class="metric-card accent">
+      <div class="metric-label">Weekly Loss</div>
+      <div class="metric-value amber" id="r-weekly-loss">–</div>
+      <div class="metric-sub" id="r-weekly-kg">–</div>
+    </div>
+    <div class="metric-card green-card">
+      <div class="metric-label">Monthly Loss</div>
+      <div class="metric-value green" id="r-monthly-loss">–</div>
+      <div class="metric-sub" id="r-monthly-kg">–</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Avg Daily Deficit</div>
+      <div class="metric-value blue" id="r-avg-deficit">–</div>
+      <div class="metric-sub">kcal / day</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Goal Reached</div>
+      <div class="metric-value amber" id="r-goal-weeks">–</div>
+      <div class="metric-sub" id="r-goal-sub">weeks to goal</div>
+    </div>
+  </div>
+
+  <div id="insight-box" class="insight-strip">
+    <div class="insight-icon">⚡</div>
+    <div class="insight-text" id="insight-text">Fill in your details to see personalized insights.</div>
+  </div>
+
+  <div class="chart-title">Daily Calorie Budget — Rest vs Workout Day</div>
+  <div class="chart-wrap"><canvas id="chart-calories" role="img" aria-label="Bar chart comparing calorie intake, TDEE, and deficit for rest and workout days">Calorie comparison chart.</canvas></div>
+
+  <div class="chart-title" style="margin-top:16px">Weekly Deficit Breakdown</div>
+  <div class="chart-wrap2"><canvas id="chart-deficit" role="img" aria-label="Doughnut chart showing weekly calorie deficit distribution">Weekly deficit chart.</canvas></div>
+</div>
+</div>
+
+<div class="tab-panel" id="tab-timeline">
+<div style="padding:24px">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+    <div class="section-label" style="margin-bottom:0">12-Week Weight Projection</div>
+    <div style="font-size:11px;color:var(--text3)" id="timeline-subtitle">Starting weight → Goal</div>
+  </div>
+  <div class="chart-wrap" style="height:240px;margin-bottom:20px">
+    <canvas id="chart-timeline" role="img" aria-label="Line chart showing projected weight loss over 12 weeks">Weight projection timeline.</canvas>
+  </div>
+  <div class="chart-title">Week-by-Week Breakdown</div>
+  <div class="timeline-items" id="timeline-list"></div>
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+let gender='male', heightUnit='cm', weightUnit='kg', intensity=1.2;
+let charts={};
+
+function setGender(g){
+  gender=g;
+  document.getElementById('btn-male').classList.toggle('active',g==='male');
+  document.getElementById('btn-female').classList.toggle('active',g==='female');
+  recalc();
+}
+
+function setHeightUnit(u){
+  heightUnit=u;
+  document.getElementById('h-cm').classList.toggle('active',u==='cm');
+  document.getElementById('h-ft').classList.toggle('active',u==='ft');
+  document.getElementById('h-cm-wrap').style.display=u==='cm'?'':'none';
+  document.getElementById('h-ft-wrap').style.display=u==='ft'?'':'none';
+  recalc();
+}
+
+function setWeightUnit(u){
+  let wEl=document.getElementById('weight');
+  let gEl=document.getElementById('goal-weight');
+  if(u==='lbs'&&weightUnit==='kg'){
+    wEl.value=Math.round(parseFloat(wEl.value||80)*2.2046);
+    gEl.value=Math.round(parseFloat(gEl.value||72)*2.2046);
+  } else if(u==='kg'&&weightUnit==='lbs'){
+    wEl.value=(parseFloat(wEl.value||176)/2.2046).toFixed(1);
+    gEl.value=(parseFloat(gEl.value||159)/2.2046).toFixed(1);
+  }
+  weightUnit=u;
+  document.getElementById('w-kg').classList.toggle('active',u==='kg');
+  document.getElementById('w-lbs').classList.toggle('active',u==='lbs');
+  document.getElementById('weight-unit-label').textContent=u;
+  document.getElementById('goal-unit-label').textContent=u;
+  recalc();
+}
+
+function syncHeight(){
+  let ft=parseFloat(document.getElementById('height-ft').value)||5;
+  let inch=parseFloat(document.getElementById('height-in').value)||9;
+  document.getElementById('height-cm').value=Math.round((ft*30.48)+(inch*2.54));
+  recalc();
+}
+
+function setIntensity(idx,el){
+  document.querySelectorAll('.intensity-btn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  intensity=parseFloat(el.dataset.mult);
+  recalc();
+}
+
+function getWeightKg(){
+  let w=parseFloat(document.getElementById('weight').value)||80;
+  return weightUnit==='lbs'?w/2.2046:w;
+}
+function getGoalKg(){
+  let g=parseFloat(document.getElementById('goal-weight').value)||72;
+  return weightUnit==='lbs'?g/2.2046:g;
+}
+function getHeightCm(){
+  if(heightUnit==='cm') return parseFloat(document.getElementById('height-cm').value)||175;
+  let ft=parseFloat(document.getElementById('height-ft').value)||5;
+  let inch=parseFloat(document.getElementById('height-in').value)||9;
+  return (ft*30.48)+(inch*2.54);
+}
+
+function calcBMR(wKg,hCm,age,gender){
+  if(gender==='male') return 10*wKg+6.25*hCm-5*age+5;
+  return 10*wKg+6.25*hCm-5*age-161;
+}
+
+function fmt(n){return Math.round(n).toLocaleString()}
+function fmtDec(n,d){return n.toFixed(d)}
+
+function recalc(){
+  let wKg=getWeightKg();
+  let hCm=getHeightCm();
+  let age=parseFloat(document.getElementById('age').value)||28;
+  let days=parseInt(document.getElementById('workout-days').value)||0;
+  let restCals=parseFloat(document.getElementById('rest-cals').value)||1500;
+  let workoutCals=parseFloat(document.getElementById('workout-cals').value)||1800;
+
+  let bmr=calcBMR(wKg,hCm,age,gender);
+  let restDays=7-days;
+
+  let tdeeRest=bmr*1.2;
+  let tdeeWorkout=bmr*intensity;
+  let weeklyTDEE=(tdeeRest*restDays+tdeeWorkout*days);
+  let weeklyTarget=(restCals*restDays+workoutCals*days);
+  let weeklyDeficit=weeklyTDEE-weeklyTarget;
+  let avgDeficit=weeklyDeficit/7;
+  let weeklyLossKg=weeklyDeficit/7700;
+  let monthlyLossKg=weeklyLossKg*4.33;
+
+  let bmi=wKg/((hCm/100)**2);
+  let bmiCat=bmi<18.5?'Underweight':bmi<25?'Normal':bmi<30?'Overweight':'Obese';
+  document.getElementById('bmi-val').textContent=fmtDec(bmi,1);
+  document.getElementById('bmi-cat').textContent=bmiCat;
+
+  document.getElementById('bmr-display').textContent=fmt(bmr)+' kcal';
+  document.getElementById('tdee-rest').textContent=fmt(tdeeRest);
+  document.getElementById('tdee-workout').textContent=fmt(tdeeWorkout);
+  document.getElementById('weekly-avg').textContent=fmt(weeklyTDEE/7)+' kcal';
+
+  let restDef=tdeeRest-restCals;
+  let workoutDef=tdeeWorkout-workoutCals;
+  document.getElementById('rest-deficit-badge').textContent=(restDef>=0?'−':'+')+fmt(Math.abs(restDef))+' kcal '+(restDef>=0?'deficit':'surplus');
+  document.getElementById('workout-deficit-badge').textContent=(workoutDef>=0?'−':'+')+fmt(Math.abs(workoutDef))+' kcal '+(workoutDef>=0?'deficit':'surplus');
+
+  let weightDisplay=weightUnit==='lbs';
+  let wDisplay=weightDisplay?wKg*2.2046:wKg;
+  let goalKg=getGoalKg();
+  let goalDisplay=weightDisplay?goalKg*2.2046:goalKg;
+  let toGoal=wKg-goalKg;
+  let weeksToGoal=toGoal>0&&weeklyLossKg>0?Math.round(toGoal/weeklyLossKg):null;
+
+  let wLossDisplay=weightDisplay?weeklyLossKg*2.2046:weeklyLossKg;
+  let mLossDisplay=weightDisplay?monthlyLossKg*2.2046:monthlyLossKg;
+  let unit=weightUnit;
+
+  document.getElementById('r-weekly-loss').textContent=fmtDec(wLossDisplay,2)+' '+unit;
+  document.getElementById('r-weekly-kg').textContent=fmt(weeklyDeficit)+' kcal / week';
+  document.getElementById('r-monthly-loss').textContent=fmtDec(mLossDisplay,2)+' '+unit;
+  document.getElementById('r-monthly-kg').textContent='~'+fmt(weeklyDeficit*4.33)+' kcal / month';
+  document.getElementById('r-avg-deficit').textContent=fmt(avgDeficit);
+  document.getElementById('r-goal-weeks').textContent=weeksToGoal?weeksToGoal+'w':'–';
+  document.getElementById('r-goal-sub').textContent=weeksToGoal?'to reach '+fmtDec(goalDisplay,1)+' '+unit:'set a goal weight';
+  document.getElementById('timeline-subtitle').textContent=fmtDec(wDisplay,1)+' → '+fmtDec(goalDisplay,1)+' '+unit;
+
+  let protein=Math.round(wKg*2);
+  let proteinCal=protein*4;
+  let fat=Math.round(restCals*0.25/9);
+  let fatCal=fat*9;
+  let carbCal=restCals-proteinCal-fatCal;
+  let carbs=Math.round(carbCal/4);
+  let total=proteinCal+fatCal+Math.max(carbCal,0);
+  document.getElementById('bar-p').style.width=Math.min(100,Math.round(proteinCal/total*100))+'%';
+  document.getElementById('bar-c').style.width=Math.min(100,Math.round(Math.max(carbCal,0)/total*100))+'%';
+  document.getElementById('bar-f').style.width=Math.min(100,Math.round(fatCal/total*100))+'%';
+  document.getElementById('val-p').textContent=protein+'g ('+Math.round(proteinCal/restCals*100)+'%)';
+  document.getElementById('val-c').textContent=Math.max(0,carbs)+'g ('+Math.round(Math.max(carbCal,0)/restCals*100)+'%)';
+  document.getElementById('val-f').textContent=fat+'g ('+Math.round(fatCal/restCals*100)+'%)';
+
+  let warnings='';
+  if(restCals<1200&&gender==='female') warnings+='<div class="warning-box">⚠ Rest-day target below 1200 kcal — too low for most women. Consider ≥1200 kcal minimum.</div>';
+  if(restCals<1500&&gender==='male') warnings+='<div class="warning-box">⚠ Rest-day target below 1500 kcal — too low for most men. Consider ≥1500 kcal minimum.</div>';
+  if(avgDeficit>1000) warnings+='<div class="warning-box">⚠ Average deficit exceeds 1000 kcal/day — aggressive cut that risks muscle loss. Aim for 500–750 kcal/day max.</div>';
+  document.getElementById('warning-section').innerHTML=warnings;
+
+  let pace=avgDeficit<300?'very gentle':avgDeficit<500?'moderate':avgDeficit<750?'healthy':avgDeficit<1000?'aggressive':'very aggressive';
+  let emoji=avgDeficit<300?'🐢':avgDeficit<500?'🚶':avgDeficit<750?'⚡':'🔥';
+  document.getElementById('insight-text').innerHTML=`${emoji} Your average deficit of <strong>${fmt(avgDeficit)} kcal/day</strong> is a <strong>${pace}</strong> cut. At this rate, expect to lose approximately <strong>${fmtDec(wLossDisplay,2)} ${unit}/week</strong>. ${weeksToGoal?'Goal weight in roughly <strong>'+weeksToGoal+' weeks</strong>. ':''}Aim for 0.5–1% bodyweight per week for sustainable progress.`;
+
+  updateCharts(tdeeRest,tdeeWorkout,restCals,workoutCals,restDef,workoutDef,restDays,days,wKg,goalKg,weeklyLossKg,weightDisplay);
+}
+
+function makeChart(id,config){
+  if(charts[id]) charts[id].destroy();
+  let ctx=document.getElementById(id);
+  if(!ctx) return;
+  charts[id]=new Chart(ctx,config);
+}
+
+function updateCharts(tdeeR,tdeeW,restC,workoutC,restDef,workoutDef,restDays,workDays,wKg,goalKg,weeklyLossKg,imperial){
+  let unit=imperial?'lbs':'kg';
+  let tdeeArr=[Math.round(tdeeR),Math.round(tdeeW)];
+  let targetArr=[Math.round(restC),Math.round(workoutC)];
+  let defArr=[Math.round(restDef),Math.round(workoutDef)];
+
+  makeChart('chart-calories',{
+    type:'bar',
+    data:{
+      labels:['Rest Day','Workout Day'],
+      datasets:[
+        {label:'TDEE (Maintenance)',data:tdeeArr,backgroundColor:'#374151',borderColor:'#4b5563',borderWidth:1,borderRadius:4},
+        {label:'Your Target',data:targetArr,backgroundColor:'#f59e0b',borderColor:'#f59e0b',borderWidth:1,borderRadius:4},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#666',font:{size:11}},grid:{color:'rgba(255,255,255,0.05)'}},
+        y:{ticks:{color:'#666',font:{size:11},callback:v=>fmt(v)},grid:{color:'rgba(255,255,255,0.05)'},beginAtZero:true}
+      }
+    }
+  });
+
+  let weeklyDef=(restDef*restDays+workoutDef*workDays);
+  let pos=Math.max(0,weeklyDef);
+  let neg=Math.max(0,-weeklyDef);
+  makeChart('chart-deficit',{
+    type:'doughnut',
+    data:{
+      labels:['Rest Day Deficit','Workout Day Deficit'],
+      datasets:[{
+        data:[Math.round(restDef*restDays),Math.round(workoutDef*workDays)],
+        backgroundColor:['#1d4ed8','#f59e0b'],
+        borderColor:'#111',borderWidth:2
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      cutout:'65%'
+    }
+  });
+
+  let weeks=12;
+  let labels=Array.from({length:weeks+1},(_,i)=>'Wk '+i);
+  let projData=[];
+  let wCurr=wKg;
+  for(let i=0;i<=weeks;i++){
+    let v=imperial?wCurr*2.2046:wCurr;
+    projData.push(parseFloat(v.toFixed(2)));
+    wCurr-=weeklyLossKg;
+  }
+  let goalLine=Array(weeks+1).fill(parseFloat((imperial?goalKg*2.2046:goalKg).toFixed(2)));
+
+  makeChart('chart-timeline',{
+    type:'line',
+    data:{
+      labels:labels,
+      datasets:[
+        {label:'Projected Weight',data:projData,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',fill:true,tension:0.3,pointRadius:3,pointBackgroundColor:'#f59e0b',borderWidth:2,borderDash:[]},
+        {label:'Goal Weight',data:goalLine,borderColor:'#22c55e',backgroundColor:'transparent',fill:false,tension:0,pointRadius:0,borderWidth:1,borderDash:[5,4]}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#666',font:{size:10},maxRotation:0},grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{ticks:{color:'#666',font:{size:10},callback:v=>v.toFixed(1)+' '+unit},grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+
+  let list=document.getElementById('timeline-list');
+  let html='';
+  let wCur=wKg;
+  let goalReached=false;
+  for(let i=1;i<=12;i++){
+    wCur-=weeklyLossKg;
+    let wDisp=imperial?wCur*2.2046:wCur;
+    let startW=imperial?wKg*2.2046:wKg;
+    let gW=imperial?goalKg*2.2046:goalKg;
+    let progress=Math.min(100,Math.max(0,Math.round((startW-wDisp)/(startW-gW)*100)));
+    let delta=weeklyLossKg*(imperial?2.2046:1);
+    let reachedNow=!goalReached&&wCur<=goalKg;
+    if(reachedNow) goalReached=true;
+    html+=`<div class="timeline-row" style="${reachedNow?'border-color:var(--green);background:#0a1a0e':''}">
+      <span class="timeline-week">WK ${i}</span>
+      <div class="timeline-bar-wrap"><div class="timeline-bar" style="width:${progress}%;${reachedNow?'background:#22c55e':''}"></div></div>
+      <span class="timeline-weight mono">${fmtDec(wDisp,1)} ${unit}</span>
+      <span class="timeline-delta mono">−${fmtDec(delta,2)}</span>
+    </div>`;
+  }
+  list.innerHTML=html;
+}
+
+function switchTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('tab-'+id).classList.add('active');
+  if(id==='results'||id==='timeline') setTimeout(recalc,50);
+}
+
+recalc();
+</script>
+</body>
+</html>
