@@ -80,7 +80,7 @@ body::after {
    Minimalistic · Low-opacity · Professional
    ═══════════════════════════════════════════════════════════════════════════ */
 .signature {
-  position: fixed;
+  position: absolute; /* Anchors it to the bottom of the document instead of the screen */
   bottom: 18px;
   right: 20px;
   z-index: 10;
@@ -122,7 +122,7 @@ body::after {
   text-transform: uppercase;
   color: var(--text);
   opacity: 0.16;
-  position: fixed;
+  position: absolute; /* Anchors it to the bottom of the document instead of the screen */
   bottom: 18px;
   right: 20px;
   z-index: 10;
@@ -800,6 +800,7 @@ body[data-tab="timeline"] .speedbag-scene,
 
 input[type="number"] {
   width: 100%;
+  height: 100%; /* Forces the input to match the BMI tile's height, perfectly centering the suffix */
   background: var(--glass-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -863,8 +864,8 @@ input[type="number"]:active {
 input[type="range"] {
   -webkit-appearance: none;
   width: 100%;
-  height: 3px;
-  border-radius: 2px;
+  height: 6px; /* Slightly thicker base track for better touch registration */
+  border-radius: 3px;
   outline: none;
   cursor: pointer;
   background: linear-gradient(
@@ -872,6 +873,10 @@ input[type="range"] {
     var(--red) var(--prog, 57%),
     var(--border2) var(--prog, 57%)
   );
+  /* CRITICAL MOBILE FIXES */
+  touch-action: pan-y; /* Allows vertical scrolling, but locks horizontal drags to the slider */
+  position: relative;
+  z-index: 20; /* Ensures it sits above any invisible container margins */
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -1560,8 +1565,8 @@ input[type="range"]:active::-webkit-slider-thumb {
   }
 
   input[type="range"] {
-    height: 6px;
-    padding: 8px 0;
+    height: 8px; /* Slightly thicker on mobile to act as a better hit area */
+    /* Padding removed: padding breaks the custom track touch-mapping on mobile WebKit */
   }
 
   input[type="range"]::-webkit-slider-thumb {
