@@ -736,9 +736,20 @@ body[data-tab="timeline"] .speedbag-scene,
   cursor: pointer;
   border-radius: var(--radius-sm);
   font-family: 'Syne', sans-serif;
-  text-align: center;
+  /* Replaced text-align with flexbox for perfect icon centering */
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  gap: 6px; 
   transition: all 0.25s ease;
   will-change: transform, box-shadow, border-color;
+}
+
+/* New class strictly for sizing the symbols */
+.gender-icon {
+  font-size: 18px; /* Boosts the size */
+  font-weight: 400; /* Prevents the icons from looking too bold/heavy */
+  line-height: 1;
 }
 
 .gender-btn:hover:not(.active) {
@@ -865,23 +876,25 @@ input[type="range"] {
 
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: var(--red);
-  border: 2px solid var(--bg);
-  box-shadow: 0 0 0 2px var(--red-dim), 0 0 10px var(--red-glow);
+  width: 28px; /* Sized up so the gloves are clearly visible */
+  height: 28px;
+  background: url('gloves_slider.png') center/contain no-repeat;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  filter: drop-shadow(0 2px 6px rgba(229, 57, 53, 0.4)); /* Image shadow instead of box shadow */
   cursor: pointer;
-  transition: transform 0.12s ease;
+  transition: transform 0.12s ease, filter 0.12s ease;
 }
 
 input[type="range"]::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
+  transform: scale(1.15) rotate(-5deg); /* Slight punch angle on hover */
+  filter: drop-shadow(0 4px 10px rgba(229, 57, 53, 0.6));
 }
 
 input[type="range"]:active::-webkit-slider-thumb {
-  transform: scale(1.35);
-  box-shadow: 0 0 0 4px var(--red-dim), 0 0 18px var(--red-glow);
+  transform: scale(1.05) rotate(5deg); /* Impact state */
+  filter: drop-shadow(0 2px 4px rgba(229, 57, 53, 0.8));
 }
 
 /* ── Intensity Grid ── */
@@ -1552,8 +1565,8 @@ input[type="range"]:active::-webkit-slider-thumb {
   }
 
   input[type="range"]::-webkit-slider-thumb {
-    width: 22px;
-    height: 22px;
+    width: 32px;
+    height: 32px;
   }
 
   .slider-val {
