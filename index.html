@@ -5,14 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Metabolic Engine — Calorie Deficit & Weight Loss Calculator</title>
 
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  
+  <!-- WebGL Water Ripples Engine -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jquery.ripples@0.6.3/dist/jquery.ripples.min.js"></script>
 
+  <!-- External stylesheet -->
   <link rel="stylesheet" href="style.css" />
 
+  <!-- UI Polish: Smooth Transitions, Resizing, Dropdowns & Water -->
   <style>
     /* Ultra-smooth tab panel fade-in */
     .tab-panel.active {
@@ -23,6 +31,13 @@
       to { opacity: 1; transform: translateY(0); }
     }
     
+    /* Force scenes to ceiling EXCEPT speedbag (Trophy) */
+    .bag-scene, .gloves-scene {
+      top: 0 !important;
+      margin-top: 0 !important;
+      padding-top: 0 !important;
+    }
+
     /* Ensure 3D objects are large and well-positioned on desktop */
     @media (min-width: 769px) {
       .bag-scene, .gloves-scene, .speedbag-scene {
@@ -30,40 +45,129 @@
         right: 4% !important;
       }
     }
+
+/* Black Water Background Canvas */
+   /* Deep Reflective Obsidian / Glassy Water Background */
+    #water-bg {
+      position: fixed;
+      top: 0; 
+      left: 0; 
+      width: 100vw; 
+      height: 100vh;
+      z-index: -999;
+      background-image: radial-gradient(ellipse at 50% -20%, #3a3b3e 0%, #0d0d0d 45%, #000000 100%);
+      background-color: #000000;
+      pointer-events: none;
+    }
+
+    /* Refraction overlay for text and boxes */
+    #water-fg {
+      position: fixed;
+      top: 0; 
+      left: 0;
+      width: 100vw; 
+      height: 100vh;
+      z-index: 9999; 
+      pointer-events: none; 
+      background-color: #808080; 
+      mix-blend-mode: overlay; 
+      opacity: 0.35; 
+    }
+
+    /* Custom Dropdown Styling */
+    select.dark-select {
+      width: 100%;
+      background: rgba(20, 20, 20, 0.65);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1.5px solid #2e2e2e;
+      border-radius: 6px;
+      padding: 10px 30px 10px 12px;
+      color: #F5F5F5;
+      font-size: 13px;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+      outline: none;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    select.dark-select:focus {
+      border-color: #E53935;
+      box-shadow: 0 0 0 3px rgba(229, 57, 53, 0.15), 0 0 16px rgba(229, 57, 53, 0.3);
+    }
+    select.dark-select option {
+      background: #111;
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-weight: 600;
+    }
+    .select-wrap {
+      position: relative;
+    }
+    .select-wrap::after {
+      content: '▼';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 10px;
+      color: #666;
+      pointer-events: none;
+    }
+    
+    /* Increase signature visibility */
+    .signature {
+      opacity: 0.5 !important; 
+    }
   </style>
 </head>
 
 <body data-tab="inputs">
 
+  <!-- ── Deep Black Water Background ── -->
+  <div id="water-bg"></div>
+
+  <!-- ── Corner decorative accent ── -->
   <div class="corner-accent"></div>
 
+  <!-- ══════════════════════════════════════════════════════════════════════
+       DECORATIVE 3D OBJECTS
+       ══════════════════════════════════════════════════════════════════════ -->
+
+  <!-- ── 1. HEAVY PUNCHING BAG SCENE (Inputs tab) ── -->
   <div class="bag-scene tab-active">
     <div class="bag-container" style="top: 0;">
       <div class="tilt-wrapper">
-        <img src="bag.png" alt="Heavy Bag" style="width: 445px; height: auto; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));">
+        <img src="bag.png" alt="Heavy Bag" style="width: 545px; height: auto; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));">
       </div>
     </div>
   </div>
 
 
+  <!-- ── 2. BOXING GLOVES SCENE (Results tab) ── -->
   <div class="gloves-scene">
     <div class="gloves-container" style="top: 0;">
       <div class="tilt-wrapper">
-        <img src="gloves.png" alt="Boxing Gloves" style="width: 170px; height: auto; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));">
+        <img src="gloves.png" alt="Boxing Gloves" style="width: 190px; height: auto; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));">
       </div>
     </div>
   </div>
 
 
+  <!-- ── 3. CHAMPIONSHIP TROPHY SCENE (Timeline tab) ── -->
   <div class="speedbag-scene">
-    <div class="speedbag-container" style="top: 15px;">
+    <div class="speedbag-container" style="top: 15px;"> <!-- Offset restored -->
       <div class="tilt-wrapper">
-        <img src="trophy.png" alt="Championship Trophy" style="width: 140px; height: auto; filter: drop-shadow(0 15px 25px rgba(229, 57, 53, 0.3));">
+        <img src="trophy.png" alt="Championship Trophy" style="width: 150px; height: auto; filter: drop-shadow(0 15px 25px rgba(229, 57, 53, 0.3));">
       </div>
     </div>
   </div>
 
 
+  <!-- ══════════════════════════════════════════════════════════════════════
+       HEADER
+       ══════════════════════════════════════════════════════════════════════ -->
   <header class="header">
     <div class="header-eyebrow">Metabolic Engine</div>
     <h2><em>Calorie Deficit</em><br>&amp; Weight Loss Calculator</h2>
@@ -71,6 +175,9 @@
   </header>
 
 
+  <!-- ══════════════════════════════════════════════════════════════════════
+       TAB BAR
+       ══════════════════════════════════════════════════════════════════════ -->
   <nav class="tabs" role="tablist">
     <button class="tab active" data-tab="inputs"   role="tab" aria-selected="true">Inputs</button>
     <button class="tab"        data-tab="results"  role="tab" aria-selected="false">Results</button>
@@ -78,13 +185,18 @@
   </nav>
 
 
+  <!-- ══════════════════════════════════════════════════════════════════════
+       TAB PANEL — INPUTS
+       ══════════════════════════════════════════════════════════════════════ -->
   <div class="tab-panel active" id="tab-inputs" role="tabpanel">
     <div class="main">
 
+      <!-- ── LEFT PANEL: Body Metrics ── -->
       <div class="panel-left">
 
         <p class="section-label">Body Metrics</p>
 
+        <!-- Gender Toggle -->
         <div class="form-group">
           <div class="form-label">Gender</div>
           <div class="gender-toggle">
@@ -93,6 +205,7 @@
           </div>
         </div>
 
+        <!-- Age -->
         <div class="form-group">
           <label class="form-label" for="input-age">Age</label>
           <div class="input-wrap">
@@ -101,6 +214,7 @@
           </div>
         </div>
 
+        <!-- Height with cm / ft toggle -->
         <div class="form-group">
           <div class="form-label">
             <span>Height</span>
@@ -127,6 +241,7 @@
           </div>
         </div>
 
+        <!-- Weight with kg / lbs toggle + BMI tile -->
         <div class="form-group">
           <div class="form-label">
             <span>Current Weight</span>
@@ -140,6 +255,7 @@
               <input type="number" id="input-weight" value="75" placeholder="75" min="30" max="400" />
               <span class="input-suffix" id="weight-suffix">kg</span>
             </div>
+            <!-- BMI Tile -->
             <div class="bmi-tile">
               <div class="metric-label" style="margin-bottom:4px;">BMI</div>
               <div class="metric-value red" id="bmi-value" style="font-size:20px;">—</div>
@@ -148,6 +264,7 @@
           </div>
         </div>
 
+        <!-- Goal Weight -->
         <div class="form-group">
           <div class="form-label">
             <span>Goal Weight</span>
@@ -158,8 +275,9 @@
           </div>
         </div>
 
-        <p class="section-label" style="margin-top:24px;">Activity Level</p>
+        <p class="section-label" style="margin-top:24px;">Activity & Burn</p>
 
+        <!-- Workout Days Slider -->
         <div class="slider-group">
           <div class="slider-header">
             <div class="form-label" style="margin-bottom:0;">Workout Days / Week</div>
@@ -179,70 +297,87 @@
           />
         </div>
 
+        <!-- Rest Day Base Activity Dropdown -->
         <div class="form-group">
-          <div class="form-label">Workout Intensity</div>
-          <div class="intensity-grid">
-            <button class="intensity-btn" data-intensity="sedentary">
-              Sedentary<br/><span>desk job</span>
-            </button>
-            <button class="intensity-btn" data-intensity="light">
-              Light<br/><span>walking</span>
-            </button>
-            <button class="intensity-btn active" data-intensity="moderate">
-              Moderate<br/><span>gym 3–5×</span>
-            </button>
-            <button class="intensity-btn" data-intensity="heavy">
-              Heavy<br/><span>hard 6–7×</span>
-            </button>
-            <button class="intensity-btn" data-intensity="athlete">
-              Athlete<br/><span>2× daily</span>
-            </button>
+          <label class="form-label" for="base-activity">Rest Day Activity</label>
+          <div class="select-wrap">
+            <select id="base-activity" class="dark-select">
+              <option value="1.2">Sedentary (Desk job, mostly resting)</option>
+              <option value="1.375">Light (10k steps, light movement)</option>
+              <option value="1.55">Moderate (Active job, on feet often)</option>
+              <option value="1.725">High (Physical labor, very active)</option>
+            </select>
           </div>
         </div>
 
-      </div><div class="panel-right">
+        <!-- Workout Day Burn Dropdown -->
+        <div class="form-group">
+          <label class="form-label" for="workout-burn">Workout Day Added Burn</label>
+          <div class="select-wrap">
+            <select id="workout-burn" class="dark-select">
+              <option value="300">Light (~300 kcal: light cardio/weights)</option>
+              <option value="500" selected>Moderate (~500 kcal: standard 1hr gym)</option>
+              <option value="800">Intense (~800 kcal: heavy bag/sparring)</option>
+              <option value="1200">Elite (~1200+ kcal: double sessions)</option>
+            </select>
+          </div>
+        </div>
 
-        <p class="section-label">Estimated TDEE</p>
+      </div><!-- /panel-left -->
+
+
+      <!-- ── RIGHT PANEL: Calorie Targets ── -->
+      <div class="panel-right">
+
+        <!-- Split TDEE Display -->
+        <p class="section-label">Estimated Maintenance (TDEE)</p>
         <div class="tdee-block">
           <div class="tdee-label">Total Daily Energy Expenditure</div>
           <div class="tdee-grid">
             <div>
-              <div class="tdee-num red" id="tdee-value">—</div>
+              <div class="tdee-sub" style="margin-bottom:6px;">REST DAY</div>
+              <div class="tdee-num blue" id="tdee-rest-val" style="text-shadow:0 0 14px rgba(68,138,255,0.3);">—</div>
               <div class="tdee-sub">kcal / day</div>
             </div>
             <div>
-              <div class="tdee-num" id="tdee-weekly" style="color:var(--text2);">—</div>
-              <div class="tdee-sub">kcal / week</div>
+              <div class="tdee-sub" style="margin-bottom:6px;">WORKOUT DAY</div>
+              <div class="tdee-num red" id="tdee-workout-val" style="text-shadow:0 0 14px rgba(229,57,53,0.3);">—</div>
+              <div class="tdee-sub">kcal / day</div>
             </div>
           </div>
           <div class="tdee-divider" id="tdee-bmr-line">
-            BMR: <span id="tdee-bmr-val">—</span> kcal · Mifflin-St Jeor equation
+            BMR: <span id="tdee-bmr-val" style="color:var(--text2);">—</span> kcal · Daily Avg: <span id="tdee-weekly-val" style="color:var(--text2);">—</span> kcal
           </div>
         </div>
 
+        <!-- Warning Box -->
         <div class="warning-box" id="warning-box" style="display:none;">
           ⚠ Target calorie intake is below 1,200 kcal (women) or 1,500 kcal (men). Consider a moderate deficit or consult a dietitian.
         </div>
 
+        <!-- Rest Day Target -->
         <p class="section-label">Calorie Targets</p>
         <div class="calorie-target" id="card-rest">
-          <div class="calorie-target-header">Rest Day</div>
+          <div class="calorie-target-header">Rest Day Diet Target</div>
           <div class="calorie-input-row">
             <input type="number" id="input-rest-kcal" placeholder="Auto-calculated" />
             <span class="calorie-badge" id="rest-deficit-badge">— deficit</span>
           </div>
         </div>
 
+        <!-- Workout Day Target -->
         <div class="calorie-target" id="card-workout">
-          <div class="calorie-target-header">Workout Day</div>
+          <div class="calorie-target-header">Workout Day Diet Target</div>
           <div class="calorie-input-row">
             <input type="number" id="input-workout-kcal" placeholder="Auto-calculated" />
             <span class="calorie-badge" id="workout-deficit-badge">— deficit</span>
           </div>
         </div>
 
-        <p class="section-label" style="margin-top:24px;">Macro Split</p>
+        <!-- Macro Split -->
+        <p class="section-label" style="margin-top:24px;">Macro Split (Based on Rest Day)</p>
         <div class="macro-bars">
+          <!-- Protein -->
           <div class="macro-row">
             <div class="macro-name" style="color:var(--red);">Protein</div>
             <div class="macro-bar-bg">
@@ -250,13 +385,15 @@
             </div>
             <div class="macro-val" id="macro-val-protein">—</div>
           </div>
+          <!-- Carbs -->
           <div class="macro-row">
-            <div class="macro-name" style="color:var(--blue);">Carbohydrates</div>
+            <div class="macro-name" style="color:var(--blue);">Carbs</div>
             <div class="macro-bar-bg">
               <div class="macro-bar-fill" id="macro-bar-carbs" style="width:0%;background:var(--blue);"></div>
             </div>
             <div class="macro-val" id="macro-val-carbs">—</div>
           </div>
+          <!-- Fats -->
           <div class="macro-row">
             <div class="macro-name" style="color:var(--green);">Fats</div>
             <div class="macro-bar-bg">
@@ -266,20 +403,31 @@
           </div>
         </div>
 
-        <button class="gender-btn active" id="btn-calculate" style="width:100%;padding:15px;font-size:13px;letter-spacing:0.14em;border-radius:var(--radius);">
+        <!-- Calculate CTA -->
+        <button class="gender-btn active" id="btn-calculate" style="width:100%;padding:15px;font-size:13px;letter-spacing:0.14em;border-radius:6px;">
           ⚡ Calculate
         </button>
 
-      </div></div></div><div class="tab-panel" id="tab-results" role="tabpanel">
+      </div><!-- /panel-right -->
+
+    </div><!-- /main -->
+  </div><!-- /tab-inputs -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       TAB PANEL — RESULTS
+       ══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-results" role="tabpanel">
     <div style="padding:26px 24px;">
 
       <p class="section-label">Key Metrics</p>
 
+      <!-- 4 Metric Cards -->
       <div class="results-grid">
         <div class="metric-card accent">
-          <div class="metric-label">Daily Deficit</div>
+          <div class="metric-label">Avg Daily Deficit</div>
           <div class="metric-value red" id="res-daily-deficit">—</div>
-          <div class="metric-sub">kcal below TDEE</div>
+          <div class="metric-sub">kcal below maintenance</div>
         </div>
         <div class="metric-card green-card">
           <div class="metric-label">Weekly Deficit</div>
@@ -298,6 +446,7 @@
         </div>
       </div>
 
+      <!-- Insight Strip -->
       <div class="insight-strip" id="insight-strip">
         <div class="insight-icon">💡</div>
         <div class="insight-text" id="insight-text">
@@ -305,22 +454,31 @@
         </div>
       </div>
 
-      <div class="chart-title">Weekly Calorie Cycle</div>
+      <!-- Chart: Weekly Calorie Cycle -->
+      <div class="chart-title">Weekly Calorie Intake vs Maintenance</div>
       <div class="chart-wrap">
         <canvas id="chart-calories"></canvas>
       </div>
 
-      <div class="chart-title" style="margin-top:16px;">Daily Deficit Balance</div>
+      <!-- Chart: Deficit vs Surplus -->
+      <div class="chart-title" style="margin-top:16px;">Weekly Deficit Balance</div>
       <div class="chart-wrap2">
         <canvas id="chart-deficit"></canvas>
       </div>
 
     </div>
-  </div><div class="tab-panel" id="tab-timeline" role="tabpanel">
+  </div><!-- /tab-results -->
+
+
+  <!-- ══════════════════════════════════════════════════════════════════════
+       TAB PANEL — TIMELINE
+       ══════════════════════════════════════════════════════════════════════ -->
+  <div class="tab-panel" id="tab-timeline" role="tabpanel">
     <div style="padding:26px 24px;">
 
       <p class="section-label">Weight Loss Projection</p>
 
+      <!-- Chart: Weight-loss trajectory -->
       <div class="chart-title">Body Weight Trajectory</div>
       <div class="chart-wrap" style="height:240px;margin-bottom:24px;">
         <canvas id="chart-timeline"></canvas>
@@ -328,6 +486,7 @@
 
       <p class="section-label">Week-by-Week Breakdown</p>
 
+      <!-- Timeline Rows List -->
       <div class="timeline-items" id="timeline-list">
         <div class="timeline-row">
           <div class="timeline-week">Week —</div>
@@ -338,9 +497,11 @@
       </div>
 
     </div>
-  </div><div class="signature">Abhijeet Singh</div>
+  </div><!-- /tab-timeline -->
 
+  <div class="signature">Abhijeet Singh</div>
 
+  <!-- External script -->
   <script src="script.js"></script>
 </body>
 </html>
