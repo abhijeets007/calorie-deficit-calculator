@@ -1701,49 +1701,80 @@ body[data-tab="timeline"] .speedbag-scene,
    UPGRADED REAL-WORLD PHYSICS & ANIMATIONS
    ============================================================== */
 
-/* ── 1. HEAVY BAG: Massive, heavy swing (Top-heavy pivot) ── */
-.bag-container.is-hit .tilt-wrapper,
-.bag-container.enter-scene .tilt-wrapper {
-  transform-origin: top center;
-  animation: heavyBagSmash 1.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-@keyframes heavyBagSmash {
-  0%   { transform: rotate(0deg); }
-  15%  { transform: rotate(-35deg) translateY(-15px); } /* Massive swing back */
-  35%  { transform: rotate(20deg); } /* Heavy swing forward */
-  55%  { transform: rotate(-10deg); }
-  75%  { transform: rotate(5deg); }
-  90%  { transform: rotate(-2deg); }
-  100% { transform: rotate(0deg); }
+/* ── 1. HEAVY BAG: Slower, Heavier Pendulum ── */
+.bag-container.is-hit,
+.bag-container.enter-scene {
+  transform-origin: 50% 0; /* Anchored at the top */
+  animation: heavyPendulum 3.5s forwards;
 }
 
-/* ── 2. BOXING GLOVES: Twist, jiggle, and spin on laces ── */
-.gloves-container.is-hit .tilt-wrapper,
-.gloves-container.enter-scene .tilt-wrapper {
-  transform-origin: top center;
-  animation: glovesSpinHit 1.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
-}
-@keyframes glovesSpinHit {
-  0%   { transform: rotate(0deg) rotateY(0deg); }
-  20%  { transform: rotate(-15deg) rotateY(45deg) translateX(-10px); } /* Swings AND twists wildly */
-  40%  { transform: rotate(10deg) rotateY(-25deg); }
-  60%  { transform: rotate(-6deg) rotateY(15deg); }
-  80%  { transform: rotate(3deg) rotateY(-5deg); }
-  100% { transform: rotate(0deg) rotateY(0deg); }
+/* ── 2. BOXING GLOVES: Natural Lighter Pendulum ── */
+.gloves-container.is-hit,
+.gloves-container.enter-scene {
+  transform-origin: 50% 0; /* Anchored at the top */
+  /* Gloves have less mass, so they settle slightly faster than the bag */
+  animation: heavyPendulum 2.6s forwards; 
 }
 
-/* ── 3. TROPHY: Heavy metallic shudder / table bump ── */
-.speedbag-container.is-hit .tilt-wrapper,
-.speedbag-container.enter-scene .tilt-wrapper {
-  transform-origin: bottom center; /* Anchored at the base */
-  animation: trophyShudder 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) forwards;
+@keyframes heavyPendulum {
+  0% { 
+    transform: translateX(-50%) rotate(0deg); 
+    animation-timing-function: ease-out; 
+  }
+  15% { 
+    transform: translateX(-50%) rotate(-12deg); 
+    animation-timing-function: ease-in-out; 
+  }
+  35% { 
+    transform: translateX(-50%) rotate(6deg); 
+    animation-timing-function: ease-in-out; 
+  }
+  55% { 
+    transform: translateX(-50%) rotate(-2.5deg); 
+    animation-timing-function: ease-in-out; 
+  }
+  75% { 
+    transform: translateX(-50%) rotate(0.8deg); 
+    animation-timing-function: ease-in-out; 
+  }
+  90% { 
+    transform: translateX(-50%) rotate(-0.2deg); 
+    animation-timing-function: ease-in-out; 
+  }
+  100% { 
+    transform: translateX(-50%) rotate(0deg); 
+  }
 }
-@keyframes trophyShudder {
-  0%   { transform: scale(1) translateY(0) rotate(0deg); }
-  10%  { transform: scale(0.95) translateY(5px) rotate(-4deg); } /* Compresses down into the table */
-  25%  { transform: scale(1.02) translateY(-2px) rotate(4deg); } /* Bounces up and wobbles */
-  40%  { transform: scale(1) translateY(0) rotate(-2deg); }
-  55%  { transform: scale(1) translateY(0) rotate(1deg); }
-  70%  { transform: scale(1) translateY(0) rotate(0deg); }
-  100% { transform: scale(1) translateY(0) rotate(0deg); }
+
+/* ── 3. TROPHY: Heavy metal topple and dead stop ── */
+.speedbag-container.is-hit,
+.speedbag-container.enter-scene {
+  transform-origin: 50% 100%; /* Anchored exactly at the bottom center */
+  animation: heavyTopple 2.2s forwards;
+}
+
+@keyframes heavyTopple {
+  0% { 
+    transform: translateX(-50%) rotate(0deg); 
+    animation-timing-function: ease-out;
+  }
+  15% { 
+    /* Base tilts up, pushing right */
+    transform: translateX(-50%) rotate(12deg); 
+    animation-timing-function: ease-in-out; 
+  } 
+  35% { 
+    /* Heavy thud back left */
+    transform: translateX(-50%) rotate(-3deg); 
+    animation-timing-function: ease-in-out; 
+  } 
+  55% { 
+    /* Final micro-correction */
+    transform: translateX(-50%) rotate(0.5deg); 
+    animation-timing-function: ease-in-out; 
+  } 
+  70%, 100% { 
+    /* Dead stop */
+    transform: translateX(-50%) rotate(0deg); 
+  }
 }
