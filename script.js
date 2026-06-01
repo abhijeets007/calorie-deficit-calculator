@@ -8,7 +8,7 @@
 /* ─── 1. GLOBAL STATE ──────────────────────────────────────────────────────── */
 const state = {
   gender:    'male',
-  heightUnit: 'cm',
+  heightUnit: 'ft',
   weightUnit: 'kg',
   workoutDays: 4,
   
@@ -45,6 +45,7 @@ const speedbagScene     = document.querySelector('.speedbag-scene');
 const btnMale           = document.getElementById('btn-male');
 const btnFemale         = document.getElementById('btn-female');
 const inputAge          = document.getElementById('input-age');
+const ageSliderVal      = document.getElementById('age-slider-val');
 const heightUnitPill    = document.getElementById('height-unit-pill');
 const heightInputRowCm  = document.getElementById('height-input-row');
 const heightInputRowFt  = document.getElementById('height-input-row-ft');
@@ -251,6 +252,14 @@ weightUnitPill.querySelectorAll('button').forEach(btn => {
     goalWeightSuffix.textContent = unit;
     triggerAndCalculate();
   });
+});
+
+inputAge.addEventListener('input', () => {
+  const val = parseInt(inputAge.value);
+  const min = parseInt(inputAge.min);
+  const max = parseInt(inputAge.max);
+  inputAge.style.setProperty('--prog', `${((val - min) / (max - min)) * 100}%`);
+  ageSliderVal.textContent = val;
 });
 
 daysSlider.addEventListener('input', () => {
@@ -538,6 +547,13 @@ function init() {
   inputRestKcal.dataset.auto = 'true';
   inputWorkoutKcal.dataset.auto = 'true';
   daysSlider.style.setProperty('--prog', `${(parseInt(daysSlider.value)/7)*100}%`);
+  
+  // Set initial red bar fill for age slider
+  const ageVal = parseInt(inputAge.value);
+  const ageMin = parseInt(inputAge.min);
+  const ageMax = parseInt(inputAge.max);
+  inputAge.style.setProperty('--prog', `${((ageVal - ageMin) / (ageMax - ageMin)) * 100}%`);
+
   wireHitListeners();
   initCharts();
   switchTab('inputs');
