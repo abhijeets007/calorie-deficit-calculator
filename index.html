@@ -200,18 +200,33 @@
         <div class="form-group">
           <div class="form-label">Gender</div>
           <div class="gender-toggle">
-            <button class="gender-btn active" data-gender="male" id="btn-male">♂ Male</button>
-            <button class="gender-btn" data-gender="female" id="btn-female">♀ Female</button>
+            <button class="gender-btn active" data-gender="male" id="btn-male">
+              <span class="gender-icon">♂</span> Male
+            </button>
+            <button class="gender-btn" data-gender="female" id="btn-female">
+              <span class="gender-icon">♀</span> Female
+            </button>
           </div>
         </div>
 
         <!-- Age -->
-        <div class="form-group">
-          <label class="form-label" for="input-age">Age</label>
-          <div class="input-wrap">
-            <input type="number" id="input-age" value="21" placeholder="25" min="10" max="100" />
-            <span class="input-suffix">yrs</span>
+        <div class="slider-group" style="margin-bottom: 24px;">
+          <div class="slider-header">
+            <div class="form-label" style="margin-bottom:0;">Age</div>
+            <div>
+              <span class="slider-val" id="age-slider-val">21</span>
+              <span class="slider-val-unit">yrs</span>
+            </div>
           </div>
+          <input
+            type="range"
+            id="input-age"
+            min="10"
+            max="100"
+            value="21"
+            step="1"
+            style="--prog:12.2%;"
+          />
         </div>
 
         <!-- Height with cm / ft toggle -->
@@ -219,17 +234,18 @@
           <div class="form-label">
             <span>Height</span>
             <div class="unit-pill" id="height-unit-pill">
-              <button class="active" data-unit="cm">cm</button>
-              <button data-unit="ft">ft</button>
+              <button class="active" data-unit="ft">ft</button>
+              <button data-unit="cm">cm</button>
             </div>
           </div>
-          <div class="input-row two" id="height-input-row">
+
+          <div class="input-row two" id="height-input-row" style="display:none;">
             <div class="input-wrap">
               <input type="number" id="input-height-cm" value="175" placeholder="175" min="100" max="250" />
               <span class="input-suffix">cm</span>
             </div>
           </div>
-          <div class="input-row two" id="height-input-row-ft" style="display:none;">
+          <div class="input-row two" id="height-input-row-ft">
             <div class="input-wrap">
               <input type="number" id="input-height-ft" value="5" placeholder="5" min="3" max="8" />
               <span class="input-suffix">ft</span>
