@@ -197,9 +197,15 @@ function triggerAndCalculate() {
 }
 
 function wireHitListeners() {
-  document.querySelectorAll('input[type="number"], input[type="range"], select').forEach(el => {
+  // Normal inputs: hit bag and calculate immediately
+  document.querySelectorAll('input[type="number"], select').forEach(el => {
     el.addEventListener('input', triggerAndCalculate);
-    el.addEventListener('change', triggerAndCalculate);
+  });
+
+  // Sliders: Calculate numbers live while dragging, but only hit the bag ONCE when released
+  document.querySelectorAll('input[type="range"]').forEach(el => {
+    el.addEventListener('input', calculate);     // Live math update
+    el.addEventListener('change', triggerHit);   // Single physical hit on release
   });
 }
 
@@ -267,7 +273,7 @@ daysSlider.addEventListener('input', () => {
   daysSlider.style.setProperty('--prog', `${(val / 7) * 100}%`);
   daysVal.textContent = val;
   state.workoutDays = val;
-  triggerAndCalculate();
+  calculate(); // Runs the math silently without hitting the bag
 });
 
 btnCalculate.addEventListener('click', () => {
@@ -548,7 +554,6 @@ function init() {
   inputWorkoutKcal.dataset.auto = 'true';
   daysSlider.style.setProperty('--prog', `${(parseInt(daysSlider.value)/7)*100}%`);
   
-  // Set initial red bar fill for age slider
   const ageVal = parseInt(inputAge.value);
   const ageMin = parseInt(inputAge.min);
   const ageMax = parseInt(inputAge.max);
@@ -559,43 +564,127 @@ function init() {
   switchTab('inputs');
   setTimeout(calculate, 100); 
 
-  // Initialize WebGL Black Water Background
- // Initialize WebGL Black Water Background & Foreground Refraction
-  try {
-    // 1. Background deep water
-    $('#water-bg').ripples({
-      resolution: 768, 
-      dropRadius: 20, 
-      perturbance: 0.02, 
-      interactive: false 
-    });
+  // ── Initialize Liquid Leaf Physics ──
+  const leafContainer = document.getElementById('leaf-container');
+  const numLeaves = 18; // Increased for a continuous, unbroken stream
+  const leavesData = [];
 
-    // 2. Foreground refraction layer (Over text and boxes)
-    $('#water-fg').ripples({
-      resolution: 512, 
-      dropRadius: 20, 
-      perturbance: 0.04, 
-      interactive: false 
-    });
+  for (let i = 0; i < numLeaves; i++) {
+    const wrap = document.createElement('div');
+    wrap.className = 'leaf-wrap';
+    
+    const inner = document.createElement('div');
+    inner.className = 'leaf-inner';
+    
+    const img = document.createElement('div');
+    img.className = 'leaf-img';
+    const leafNum = Math.floor(Math.random() * 6) + 1;
+    img.style.backgroundImage = `url('leaf${leafNum}.png')`;
+    
+    inner.appendChild(img);
+    wrap.appendChild(inner);
+    leafContainer.appendChild(wrap);
+    
+    const sizeCurve = Math.pow(Math.random(), 1.5); 
+    const baseScale = 0.5 + (sizeCurve * 0.7); 
 
-    // CLICK RIPPLES ON BOTH LAYERS
-    $(document).on('mousedown touchstart', function(e) {
-      let x = e.clientX || (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0].clientX);
-      let y = e.clientY || (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0].clientY);
+    leavesData.push({ 
+      wrap: wrap, 
+      inner: inner,
+      // Spread them dynamically off-screen so they enter continuously
+      streamX: (Math.random() * window.innerWidth * 2) - window.innerWidth, 
+      streamY: (Math.random() * window.innerHeight * 2) - window.innerHeight,
+      vx: 0, 
+      vy: 0, 
+      // Increased base speed for a slightly faster stream
+      baseSpeedX: 0.8 + Math.random() * 0.9, 
+      baseSpeedY: 0.5 + Math.random() * 0.7,
       
-      if (x !== undefined && y !== undefined) {
-        // Deep, heavy drop in the background
-        $('#water-bg').ripples('drop', x, y, 35, 0.15); 
-        // Refractive drop over the UI elements
-        $('#water-fg').ripples('drop', x, y, 35, 0.20); 
+      scale: baseScale,
+      baseRot: Math.random() * 360, 
+      rotSpeed: -0.08 + Math.random() * 0.16, 
+      
+      wavePhaseX: Math.random() * Math.PI * 2,
+      wavePhaseY: Math.random() * Math.PI * 2,
+      waveSpeed: 0.0008 + Math.random() * 0.0015, 
+      waveAmp: 15 + Math.random() * 35 
+    });
+  }
+
+  // Animation Loop (60FPS)
+  function animateLeaves(time) {
+    leavesData.forEach(leaf => {
+      leaf.streamX += leaf.baseSpeedX + leaf.vx;
+      leaf.streamY += leaf.baseSpeedY + leaf.vy;
+      leaf.vx *= 0.92; 
+      leaf.vy *= 0.92;
+      
+      // Smooth staggering reset: Send them far off-screen when they exit
+      if (leaf.streamX > window.innerWidth + 150) {
+        leaf.streamX = -150 - (Math.random() * 300);
+        leaf.streamY = (Math.random() * window.innerHeight) - 200;
+      }
+      if (leaf.streamY > window.innerHeight + 150) {
+        leaf.streamY = -150 - (Math.random() * 300);
+        leaf.streamX = (Math.random() * window.innerWidth) - 200;
+      }
+
+      const swayX = Math.sin(time * leaf.waveSpeed + leaf.wavePhaseX) * leaf.waveAmp;
+      const swayY = Math.cos(time * leaf.waveSpeed + leaf.wavePhaseY) * (leaf.waveAmp * 0.6);
+      leaf.baseRot += leaf.rotSpeed;
+
+      const finalX = leaf.streamX + swayX;
+      const finalY = leaf.streamY + swayY;
+
+      // Apply geometry independent of CSS opticals
+      leaf.wrap.style.transform = `translate3d(${finalX}px, ${finalY}px, 0)`;
+      leaf.inner.style.transform = `rotate(${leaf.baseRot}deg) scale(${leaf.scale})`;
+
+      // ── THE MAGIC: Micro-Ripples ──
+      // Randomly trigger tiny surface disturbances precisely where the leaf is currently bobbing
+      if (Math.random() < 0.015) {
+        try {
+          // X/Y +45 targets the dead center of the 90x90 leaf wrapper
+          $('#water-bg').ripples('drop', finalX + 45, finalY + 45, 12, 0.02);
+          $('#water-fg').ripples('drop', finalX + 45, finalY + 45, 12, 0.03);
+        } catch(e) {}
       }
     });
+    requestAnimationFrame(animateLeaves);
+  }
+  requestAnimationFrame(animateLeaves);
 
+  // ── Initialize WebGL Ripples ──
+  try {
+    $('#water-bg').ripples({ resolution: 768, dropRadius: 20, perturbance: 0.02, interactive: false });
+    $('#water-fg').ripples({ resolution: 512, dropRadius: 20, perturbance: 0.04, interactive: false });
+
+    $(document).on('mousedown touchstart', function(e) {
+      let clickX = e.clientX || (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0].clientX);
+      let clickY = e.clientY || (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches[0].clientY);
+      
+      if (clickX !== undefined && clickY !== undefined) {
+        $('#water-bg').ripples('drop', clickX, clickY, 35, 0.15); 
+        $('#water-fg').ripples('drop', clickX, clickY, 35, 0.20); 
+
+        leavesData.forEach(leaf => {
+          const dx = leaf.streamX - clickX;
+          const dy = leaf.streamY - clickY;
+          const distance = Math.sqrt(dx*dx + dy*dy);
+          
+          if (distance < 350 && distance > 0) {
+            const force = (350 - distance) / 350;
+            leaf.vx += (dx / distance) * force * 15; 
+            leaf.vy += (dy / distance) * force * 15;
+          }
+        });
+      }
+    });
   } catch (err) {
     console.warn("WebGL Water Ripples bypassed: ", err);
-  
   }
 }
+  
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
 else init();
