@@ -65,6 +65,7 @@ body::before {
 }
 
 /* Radial vignette */
+/* Radial vignette */
 body::after {
   content: '';
   position: fixed;
@@ -73,6 +74,58 @@ body::after {
   pointer-events: none;
   z-index: 0;
 }
+
+/* ── Floating Leaves Physics ── */
+    #leaf-container {
+      position: fixed;
+      top: 0; 
+      left: 0;
+      width: 100vw; 
+      height: 100vh;
+      z-index: -998; 
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .leaf-wrap {
+      position: absolute;
+      top: 0; left: 0;
+      width: 90px; height: 90px;
+      pointer-events: none;
+      will-change: transform;
+    }
+
+    /* New inner wrapper separates JS rotation from CSS visual effects */
+    .leaf-inner {
+      width: 100%; height: 100%;
+      transform-origin: center center;
+      will-change: transform;
+    }
+
+    .leaf-img {
+      width: 100%; height: 100%;
+      background-size: contain; background-repeat: no-repeat; background-position: center;
+      /* CSS strictly handles optical lighting, JS handles geometry */
+      animation: waterDip 6s ease-in-out infinite alternate;
+    }
+
+    /* Stagger the dipping so they look independent */
+    .leaf-wrap:nth-child(odd) .leaf-img { animation-duration: 7.5s; animation-delay: -2s; }
+    .leaf-wrap:nth-child(even) .leaf-img { animation-duration: 5s; animation-delay: -4s; }
+
+    @keyframes waterDip {
+      0% { 
+        opacity: 0.35; 
+        filter: drop-shadow(0 20px 25px rgba(0,0,0,0.9)) blur(1.5px); 
+      }
+      100% { 
+        opacity: 0.70; 
+        filter: drop-shadow(0 8px 12px rgba(0,0,0,0.4)) blur(0px); 
+      }
+    }
+    
+/* ═══════════════════════════════════════════════════════════════════════════
+   ── SIGNATURE STAMP — 'Abhijeet Singh'
 
 
 /* ═══════════════════════════════════════════════════════════════════════════
